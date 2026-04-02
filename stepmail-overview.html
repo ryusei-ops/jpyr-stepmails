@@ -1,0 +1,805 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>JPYR ステップメール設計書</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Helvetica Neue', 'Hiragino Kaku Gothic ProN', 'Yu Gothic', sans-serif;
+      background: #f5f6f8;
+      color: #1a1a2e;
+      line-height: 1.7;
+      padding: 40px 20px;
+    }
+    .container { max-width: 1100px; margin: 0 auto; }
+
+    /* Header */
+    .header {
+      background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+      color: #fff;
+      padding: 48px 40px;
+      border-radius: 16px;
+      margin-bottom: 32px;
+    }
+    .header h1 { font-size: 28px; font-weight: 700; margin-bottom: 8px; }
+    .header p { font-size: 15px; color: #b8b8d0; }
+    .header .meta {
+      display: flex; gap: 24px; margin-top: 20px;
+      font-size: 13px; color: #9090b0;
+    }
+    .header .meta span { background: rgba(255,255,255,0.08); padding: 4px 12px; border-radius: 6px; }
+
+    /* Section */
+    .section {
+      background: #fff;
+      border-radius: 12px;
+      padding: 32px;
+      margin-bottom: 24px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+    }
+    .section h2 {
+      font-size: 18px;
+      font-weight: 700;
+      margin-bottom: 20px;
+      padding-bottom: 12px;
+      border-bottom: 2px solid #eee;
+    }
+
+    /* Flow */
+    .flow {
+      display: flex;
+      align-items: center;
+      gap: 0;
+      margin-bottom: 8px;
+      overflow-x: auto;
+      padding: 8px 0;
+    }
+    .flow-step {
+      flex-shrink: 0;
+      text-align: center;
+      padding: 16px 20px;
+      background: #fff;
+      border-radius: 10px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+      min-width: 140px;
+    }
+    .flow-step .step-num {
+      display: inline-block;
+      width: 28px; height: 28px;
+      line-height: 28px;
+      border-radius: 50%;
+      background: #302b63;
+      color: #fff;
+      font-size: 13px;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+    .flow-step .step-title { font-size: 13px; font-weight: 700; }
+    .flow-step .step-timing { font-size: 11px; color: #888; margin-top: 2px; }
+    .flow-arrow {
+      flex-shrink: 0;
+      width: 32px;
+      text-align: center;
+      font-size: 18px;
+      color: #bbb;
+    }
+
+    /* Mail table */
+    .mail-table { width: 100%; border-collapse: collapse; font-size: 14px; }
+    .mail-table th {
+      background: #f8f9fb;
+      text-align: left;
+      padding: 12px 16px;
+      font-weight: 600;
+      font-size: 13px;
+      color: #555;
+      border-bottom: 2px solid #eee;
+    }
+    .mail-table td {
+      padding: 16px;
+      border-bottom: 1px solid #f0f0f0;
+      vertical-align: top;
+    }
+    .mail-table tr:hover { background: #fafbfd; }
+    .mail-num {
+      display: inline-block;
+      width: 32px; height: 32px;
+      line-height: 32px;
+      text-align: center;
+      border-radius: 8px;
+      font-weight: 700;
+      font-size: 14px;
+      color: #fff;
+    }
+    .mail-num.m1 { background: #4361ee; }
+    .mail-num.m2 { background: #7209b7; }
+    .mail-num.m3 { background: #f72585; }
+    .mail-num.m4 { background: #ff6d00; }
+    .mail-num.m5 { background: #06d6a0; }
+
+    /* Mail detail cards */
+    .mail-detail {
+      background: #fff;
+      border-radius: 12px;
+      padding: 28px 32px;
+      margin-bottom: 20px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+      border-left: 4px solid;
+    }
+    .mail-detail.m1 { border-left-color: #4361ee; }
+    .mail-detail.m2 { border-left-color: #7209b7; }
+    .mail-detail.m3 { border-left-color: #f72585; }
+    .mail-detail.m4 { border-left-color: #ff6d00; }
+    .mail-detail.m5 { border-left-color: #06d6a0; }
+    .mail-detail .mail-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+    .mail-detail .mail-header h3 { font-size: 16px; font-weight: 700; }
+    .mail-detail .mail-header .timing {
+      font-size: 12px;
+      color: #888;
+      background: #f5f5f5;
+      padding: 2px 10px;
+      border-radius: 4px;
+    }
+    .mail-detail .subject {
+      font-size: 15px;
+      font-weight: 600;
+      color: #302b63;
+      margin-bottom: 16px;
+      padding: 10px 16px;
+      background: #f8f9fb;
+      border-radius: 8px;
+    }
+    .mail-detail .body {
+      font-size: 14px;
+      line-height: 1.9;
+      color: #333;
+      padding: 16px 20px;
+      background: #fafbfd;
+      border-radius: 8px;
+      white-space: pre-line;
+    }
+    .mail-detail .intent {
+      margin-top: 16px;
+      padding: 10px 16px;
+      background: #fff8e1;
+      border-radius: 8px;
+      font-size: 13px;
+      color: #666;
+    }
+    .mail-detail .intent strong { color: #f57f17; }
+
+    /* Checklist */
+    .checklist { width: 100%; border-collapse: collapse; font-size: 14px; }
+    .checklist th {
+      background: #f8f9fb;
+      text-align: left;
+      padding: 10px 16px;
+      font-size: 13px;
+      font-weight: 600;
+      color: #555;
+      border-bottom: 2px solid #eee;
+    }
+    .checklist td {
+      padding: 12px 16px;
+      border-bottom: 1px solid #f0f0f0;
+    }
+    .checklist .status {
+      display: inline-block;
+      padding: 3px 10px;
+      border-radius: 4px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+    .status-pending { background: #fff3e0; color: #e65100; }
+    .status-done { background: #e8f5e9; color: #2e7d32; }
+
+    .note {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: 600;
+      background: #fce4ec;
+      color: #c62828;
+    }
+
+    /* Feedback area */
+    .feedback-area {
+      margin-top: 16px;
+      padding: 16px 20px;
+      background: #f0f4ff;
+      border: 1px dashed #8a9cc5;
+      border-radius: 8px;
+    }
+    .feedback-area summary {
+      font-size: 13px;
+      font-weight: 600;
+      color: #4361ee;
+      cursor: pointer;
+    }
+    .feedback-area textarea {
+      width: 100%;
+      min-height: 80px;
+      margin-top: 10px;
+      padding: 12px;
+      border: 1px solid #d0d7e8;
+      border-radius: 6px;
+      font-family: inherit;
+      font-size: 13px;
+      line-height: 1.6;
+      resize: vertical;
+      background: #fff;
+    }
+    .feedback-area textarea::placeholder { color: #aaa; }
+    .feedback-area .fb-hint {
+      font-size: 11px;
+      color: #888;
+      margin-top: 6px;
+    }
+
+    /* CVR section */
+    .cvr-card {
+      padding: 20px 24px;
+      background: #fafbfd;
+      border-radius: 10px;
+      margin-bottom: 16px;
+      border-left: 3px solid #302b63;
+    }
+    .cvr-card h4 {
+      font-size: 15px;
+      font-weight: 700;
+      margin-bottom: 8px;
+      color: #302b63;
+    }
+    .cvr-card ul { padding-left: 20px; font-size: 14px; }
+    .cvr-card li { margin-bottom: 6px; }
+
+    .mail-num.m6 { background: #8338ec; }
+
+    /* TOC */
+    .toc {
+      background: #fff;
+      border-radius: 12px;
+      padding: 24px 32px;
+      margin-bottom: 24px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+    }
+    .toc h2 {
+      font-size: 15px;
+      font-weight: 700;
+      margin-bottom: 12px;
+      color: #555;
+    }
+    .toc ol {
+      list-style: none;
+      padding: 0;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px 16px;
+    }
+    .toc li { font-size: 14px; }
+    .toc a {
+      color: #302b63;
+      text-decoration: none;
+      padding: 4px 12px;
+      border-radius: 6px;
+      background: #f5f6f8;
+      display: inline-block;
+      transition: background 0.15s;
+    }
+    .toc a:hover { background: #e8edff; }
+
+    html { scroll-behavior: smooth; }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .flow { flex-wrap: wrap; gap: 8px; }
+      .flow-arrow { display: none; }
+      .toc ol { flex-direction: column; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+
+    <!-- Header -->
+    <div class="header">
+      <h1>JPYR ステップメール設計書</h1>
+      <p>LP登録者 → Morphoステーキング送客のためのメールシーケンス</p>
+      <div class="meta">
+        <span>5通 + リマインド案</span>
+        <span>配信期間: 7〜9日間</span>
+        <span>更新日: 2026-04-02</span>
+        <span>ステータス: 初稿・レビュー待ち</span>
+      </div>
+    </div>
+
+    <!-- 目次 -->
+    <nav class="toc">
+      <h2>目次</h2>
+      <ol>
+        <li><a href="#flow">配信フロー</a></li>
+        <li><a href="#list">メール一覧</a></li>
+        <li><a href="#mail1">1. 歓迎 + CV導線</a></li>
+        <li><a href="#mail2">2. 課題提起</a></li>
+        <li><a href="#mail3">3. 信頼構築</a></li>
+        <li><a href="#mail4">4. 手順説明</a></li>
+        <li><a href="#mail5">5. 行動喚起</a></li>
+        <li><a href="#checklist">確認事項</a></li>
+        <li><a href="#cvr">CVR向上施策</a></li>
+      </ol>
+    </nav>
+
+    <!-- 全体フロー -->
+    <div class="section" id="flow">
+      <h2>配信フロー</h2>
+      <div class="flow">
+        <div class="flow-step">
+          <div class="step-num">1</div>
+          <div class="step-title">歓迎 + CV導線</div>
+          <div class="step-timing">即時配信</div>
+        </div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step">
+          <div class="step-num">2</div>
+          <div class="step-title">課題提起</div>
+          <div class="step-timing">+1日</div>
+        </div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step">
+          <div class="step-num">3</div>
+          <div class="step-title">信頼構築</div>
+          <div class="step-timing">+3日</div>
+        </div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step">
+          <div class="step-num">4</div>
+          <div class="step-title">手順説明</div>
+          <div class="step-timing">+5日</div>
+        </div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step">
+          <div class="step-num">5</div>
+          <div class="step-title">行動喚起</div>
+          <div class="step-timing">+7日</div>
+        </div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step" style="border: 2px dashed #8338ec;">
+          <div class="step-num" style="background:#8338ec;">6</div>
+          <div class="step-title">リマインド</div>
+          <div class="step-timing">+9日（案）</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- メール一覧 -->
+    <div class="section" id="list">
+      <h2>メール一覧</h2>
+      <table class="mail-table">
+        <thead>
+          <tr>
+            <th style="width:50px">#</th>
+            <th>件名</th>
+            <th>配信</th>
+            <th>目的</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="mail-num m1">1</span></td>
+            <td>JPYRへのご登録ありがとうございます</td>
+            <td>即時</td>
+            <td>歓迎・期待感醸成・即CV導線</td>
+          </tr>
+          <tr>
+            <td><span class="mail-num m2">2</span></td>
+            <td>なぜ今、日本円をJPYRで持つのか</td>
+            <td>+1日</td>
+            <td>課題提起・価値訴求</td>
+          </tr>
+          <tr>
+            <td><span class="mail-num m3">3</span></td>
+            <td>JPYRの運用先「Morpho」とは？</td>
+            <td>+3日</td>
+            <td>信頼構築・安心材料</td>
+          </tr>
+          <tr>
+            <td><span class="mail-num m4">4</span></td>
+            <td>JPYRステーキング、具体的にどうやるの？</td>
+            <td>+5日</td>
+            <td>手順説明・ハードル低減</td>
+          </tr>
+          <tr>
+            <td><span class="mail-num m5">5</span></td>
+            <td>JPYRステーキングを始めましょう</td>
+            <td>+7日</td>
+            <td>最終CTA・FAQ</td>
+          </tr>
+          <tr style="background: #faf5ff;">
+            <td><span class="mail-num m6">6</span></td>
+            <td>特典の受け取り期限があと○日です（案）</td>
+            <td>+9日</td>
+            <td>リマインド・緊急性付与</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- 各メール詳細 -->
+    <div class="section">
+      <h2>各メール詳細</h2>
+
+      <!-- Mail 1 -->
+      <div class="mail-detail m1" id="mail1">
+        <div class="mail-header">
+          <span class="mail-num m1">1</span>
+          <h3>歓迎メール + CV導線</h3>
+          <span class="timing">即時配信</span>
+        </div>
+        <div class="subject">件名: JPYRへのご登録ありがとうございます</div>
+        <div class="body">お名前 様
+
+JPYRにご関心をお寄せいただきありがとうございます。
+
+JPYRは、日本円に価値が連動するステーブルトークンです。
+価格変動の不安を抑えながら、新しい資産の持ち方を実現します。
+
+今後数回のメールで、JPYRの仕組みから、
+実際にJPYRを活用して利回りを得る方法まで、
+ステップごとにお伝えしていきます。
+
+すでにJPYRをお持ちの方は、
+今すぐMorphoでステーキングを始められます。
+▼ ステーキングを始める
+（※Morpho JPYRステーキングページURL）
+
+これから始める方は、次回以降のメールで
+ステップごとにご案内しますのでご安心ください。
+
+――――――――
+JPYR公式サイト: https://jpyr.online/</div>
+        <div class="intent"><strong>意図:</strong> 歓迎＋期待感の醸成。即行動できる人向けのCV導線も設置しつつ、押し売り感を出さない。「既に準備できている人」と「これからの人」を分岐させる</div>
+        <div class="feedback-area">
+          <details>
+            <summary>この通についてフィードバック</summary>
+            <textarea placeholder="内容・トーン・構成への気になる点やコメントを記入してください"></textarea>
+            <div class="fb-hint">※ GitHub PR上でもコメント可能です</div>
+          </details>
+        </div>
+      </div>
+
+      <!-- Mail 2 -->
+      <div class="mail-detail m2" id="mail2">
+        <div class="mail-header">
+          <span class="mail-num m2">2</span>
+          <h3>課題提起</h3>
+          <span class="timing">+1日</span>
+        </div>
+        <div class="subject">件名: なぜ今、日本円をJPYRで持つのか</div>
+        <div class="body">お名前 様
+
+「円で持っていれば安心」——そう思っていませんか？
+
+実は、銀行預金の金利はほぼゼロのまま。
+一方で物価は上がり続けています。
+円の「額面」は変わらなくても、「価値」は目減りしているのが現実です。
+
+JPYRは、日本円の価値に連動しながらも、
+DeFi（分散型金融）の仕組みを活用することで、
+銀行預金では得られない利回りを目指せるステーブルトークンです。
+
+ポイント:
+- 日本円連動だから、暗号資産特有の激しい値動きを抑制
+- ブロックチェーン上で透明性の高い運用が可能
+- 従来の「貯金」では届かなかったリターンの可能性
+
+次回予告:
+「利回りってどこから生まれるの？」——JPYRの運用先であるMorphoについてご紹介します。
+
+――――――――
+JPYR公式サイト: https://jpyr.online/</div>
+        <div class="intent"><strong>意図:</strong> 課題提起（円の実質価値低下）→ JPYRという解決策の位置づけを明確に</div>
+        <div class="feedback-area">
+          <details>
+            <summary>この通についてフィードバック</summary>
+            <textarea placeholder="内容・トーン・構成への気になる点やコメントを記入してください"></textarea>
+            <div class="fb-hint">※ GitHub PR上でもコメント可能です</div>
+          </details>
+        </div>
+      </div>
+
+      <!-- Mail 3 -->
+      <div class="mail-detail m3" id="mail3">
+        <div class="mail-header">
+          <span class="mail-num m3">3</span>
+          <h3>信頼構築（Morpho紹介）</h3>
+          <span class="timing">+3日</span>
+        </div>
+        <div class="subject">件名: JPYRの運用先「Morpho」とは？</div>
+        <div class="body">お名前 様
+
+前回、JPYRで利回りを目指せるとお伝えしました。
+では、その利回りはどこから生まれるのか？
+
+答えは「Morpho」です。
+
+Morphoとは:
+グローバルに展開するDeFiレンディングプロトコルです。
+貸し手と借り手を直接つなぎ、効率的な金利を実現します。
+
+なぜMorphoなのか:
+- Coinbase、Binance、Ledgerなど大手が活用する実績
+- OpenZeppelin、Trail of Bitsなど複数の一流監査企業によるセキュリティ監査済み
+- コードはGitHubで公開。透明性の高いオープンインフラ
+- 形式検証（Certora）による数学的な安全性担保
+
+JPYRをMorpho上でステーキングすることで、
+レンディング市場の利回りを享受する仕組みです。
+
+次回予告:
+実際にどのくらいの利回りが期待できるのか、具体的な数字をお見せします。
+
+――――――――
+Morpho公式サイト: https://morpho.org/</div>
+        <div class="intent"><strong>意図:</strong> 運用先の信頼性を具体的に示す。「聞いたことない怪しいサービス」という不安を払拭</div>
+        <div class="feedback-area">
+          <details>
+            <summary>この通についてフィードバック</summary>
+            <textarea placeholder="内容・トーン・構成への気になる点やコメントを記入してください"></textarea>
+            <div class="fb-hint">※ GitHub PR上でもコメント可能です</div>
+          </details>
+        </div>
+      </div>
+
+      <!-- Mail 4 -->
+      <div class="mail-detail m4" id="mail4">
+        <div class="mail-header">
+          <span class="mail-num m4">4</span>
+          <h3>手順説明</h3>
+          <span class="timing">+5日</span>
+        </div>
+        <div class="subject">件名: JPYRステーキング、具体的にどうやるの？</div>
+        <div class="body">お名前 様
+
+ここまでのメールで、JPYRの仕組みとMorphoの信頼性をお伝えしてきました。
+
+今回は「実際にどうやって始めるのか」をご説明します。
+
+ステーキングまでの3ステップ:
+
+ステップ1: JPYRを取得する
+└ （※取得方法の具体的な導線——要確認）
+
+ステップ2: ウォレットを準備する
+└ MetaMaskなどのウォレットにJPYRを保有
+
+ステップ3: MorphoでJPYRをステーキング
+└ Morphoにウォレットを接続し、JPYRを預け入れるだけ
+
+※操作に不安がある方もご安心ください。
+各ステップの詳細は以下でテキストベースでご案内しています。
+（※将来的に画面キャプチャ付きの操作ガイドを用意できると、より離脱を防げる可能性あり）
+
+想定利回りについて:
+（※実際のAPY等の数値をここに記載——要確認）
+
+――――――――
+ご不明点はこのメールへの返信でお気軽にどうぞ。</div>
+        <div class="intent"><strong>意図:</strong> 行動ハードルを下げる。ステップ分解で「自分にもできそう」と思わせる</div>
+        <div class="feedback-area">
+          <details>
+            <summary>この通についてフィードバック</summary>
+            <textarea placeholder="内容・トーン・構成への気になる点やコメントを記入してください"></textarea>
+            <div class="fb-hint">※ GitHub PR上でもコメント可能です</div>
+          </details>
+        </div>
+      </div>
+
+      <!-- Mail 5 -->
+      <div class="mail-detail m5" id="mail5">
+        <div class="mail-header">
+          <span class="mail-num m5">5</span>
+          <h3>行動喚起（最終CTA）</h3>
+          <span class="timing">+7日</span>
+        </div>
+        <div class="subject">件名: JPYRステーキングを始めましょう</div>
+        <div class="body">お名前 様
+
+ここまでお読みいただきありがとうございます。
+
+JPYRの価値、Morphoの信頼性、始め方——
+すべてお伝えしてきました。
+
+あとは、実際に始めるだけです。
+
+▼ Morphoでステーキングを始める
+（※MorphoのJPYRステーキングページへの直リンク）
+
+始めた方の声:（※実際のユーザー事例があれば差し替え）
+「銀行に眠らせていた円を、JPYRに変えてMorphoで運用しています。
+  操作も思ったより簡単でした。」
+
+よくあるご質問:
+
+Q. いつでも引き出せますか？
+A. （※回答を要確認）
+
+Q. 最低いくらから始められますか？
+A. （※回答を要確認）
+
+Q. リスクはありますか？
+A. DeFiプロトコルを利用するため、スマートコントラクトリスク等は
+   存在します。Morphoは複数の監査を受けていますが、
+   余裕資金での運用をおすすめします。
+
+――――――――
+▼ 今すぐステーキングを始める
+（※CTAリンク）</div>
+        <div class="intent"><strong>意図:</strong> 最終CTA。社会的証明（ユーザーの声）＋FAQ で残りの不安を解消し、行動を促す</div>
+        <div class="feedback-area">
+          <details>
+            <summary>この通についてフィードバック</summary>
+            <textarea placeholder="内容・トーン・構成への気になる点やコメントを記入してください"></textarea>
+            <div class="fb-hint">※ GitHub PR上でもコメント可能です</div>
+          </details>
+        </div>
+      </div>
+
+      <!-- Mail 6 (案) -->
+      <div class="mail-detail" id="mail6" style="border-left: 4px dashed #8338ec;">
+        <div class="mail-header">
+          <span class="mail-num m6">6</span>
+          <h3>リマインドメール（案）</h3>
+          <span class="timing">+9日</span>
+          <span class="note">検討中</span>
+        </div>
+        <div class="subject">件名: 特典の受け取り期限があと○日です</div>
+        <div class="body">お名前 様
+
+○月○日までにステーキングを開始された方に、
+○○をプレゼントしています。
+
+受け取り期限まで、あと○日です。
+
+おさらい — JPYRステーキング3ステップ:
+1. JPYRを取得する
+2. ウォレット（MetaMask等）を準備
+3. Morphoで預け入れ
+
+▼ 今すぐステーキングを始める
+（※CTAリンク）
+
+――――――――
+ご不明点はこのメールへの返信でお気軽にどうぞ。</div>
+        <div class="intent"><strong>意図:</strong> 5通目で未行動の人に緊急性で後押し。要点を3行に圧縮し、すぐ行動に移れるようにする</div>
+        <div class="feedback-area">
+          <details>
+            <summary>この通についてフィードバック</summary>
+            <textarea placeholder="6通目を追加すべきか、特典の内容、タイミング等のコメントを記入してください"></textarea>
+            <div class="fb-hint">※ GitHub PR上でもコメント可能です</div>
+          </details>
+        </div>
+      </div>
+    </div>
+
+    <!-- 確認事項チェックリスト -->
+    <div class="section" id="checklist">
+      <h2>確認事項</h2>
+      <table class="checklist">
+        <thead>
+          <tr>
+            <th style="width:40px">#</th>
+            <th>確認事項</th>
+            <th>該当メール</th>
+            <th>ステータス</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>1</td>
+            <td>JPYRの取得方法・購入導線の具体的な記載</td>
+            <td>4通目</td>
+            <td><span class="status status-pending">未確認</span></td>
+          </tr>
+          <tr>
+            <td>2</td>
+            <td>現在のAPY（想定利回り）の数値</td>
+            <td>4通目</td>
+            <td><span class="status status-pending">未確認</span></td>
+          </tr>
+          <tr>
+            <td>3</td>
+            <td>MorphoでのJPYR専用ステーキングページURL</td>
+            <td>1・5通目</td>
+            <td><span class="status status-pending">未確認</span></td>
+          </tr>
+          <tr>
+            <td>4</td>
+            <td>引き出し条件・最低ステーキング額</td>
+            <td>5通目</td>
+            <td><span class="status status-pending">未確認</span></td>
+          </tr>
+          <tr>
+            <td>5</td>
+            <td>リスク表記に関する法的・コンプライアンス確認</td>
+            <td>全体</td>
+            <td><span class="status status-pending">未確認</span></td>
+          </tr>
+          <tr>
+            <td>6</td>
+            <td>ステーブルトークンとしての法的位置づけの表現</td>
+            <td>2通目</td>
+            <td><span class="status status-pending">未確認</span></td>
+          </tr>
+          <tr>
+            <td>7</td>
+            <td>ユーザー事例・テスティモニアルの有無</td>
+            <td>5通目</td>
+            <td><span class="status status-pending">未確認</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- CVR向上施策 -->
+    <div class="section" id="cvr">
+      <h2>CVR向上のために用意できるとよい施策</h2>
+
+      <div class="cvr-card">
+        <h4>早期行動インセンティブ</h4>
+        <ul>
+          <li><strong>期間限定特典</strong>: 「○月○日までにステーキング開始で JPYRボーナス○○円分プレゼント」など。行動の理由を"今"にする</li>
+          <li><strong>先行者向けAPY優遇</strong>: 初期ステーキング者に一定期間ブースト利率を適用できるなら訴求力が高い</li>
+          <li><strong>手数料キャッシュバック</strong>: 初回ガス代相当のJPYR還元。始めるコストをゼロに見せる</li>
+        </ul>
+      </div>
+
+      <div class="cvr-card">
+        <h4>6通目リマインドメール（+9日）</h4>
+        <ul>
+          <li>5通目で未行動の人に特典期限の緊急性で後押し</li>
+          <li>件名例: 「特典の受け取り期限があと○日です」</li>
+          <li>1〜5通目の要点を3行で要約し、読み返す手間を省く</li>
+        </ul>
+      </div>
+
+      <div class="cvr-card">
+        <h4>その他</h4>
+        <ul>
+          <li><strong>画面キャプチャ付き操作ガイド</strong>: Morpho接続→預入が最大の離脱ポイント。スクショがあると効果的</li>
+          <li><strong>FAQ常設ページ / LP内アンカー</strong>: メール外からの流入にも対応</li>
+          <li><strong>チャットサポート導線</strong>: LINE/Discordで質問可能にし、操作不安で離脱する層を拾う</li>
+        </ul>
+      </div>
+
+      <div class="feedback-area">
+        <details open>
+          <summary>CVR施策へのフィードバック</summary>
+          <textarea placeholder="実現可能な施策、特典として提供できるもの、優先度などコメントをお願いします"></textarea>
+          <div class="fb-hint">※ GitHub PR上でもコメント可能です</div>
+        </details>
+      </div>
+    </div>
+
+    <!-- 全体フィードバック -->
+    <div class="section">
+      <h2>全体へのフィードバック</h2>
+      <div class="feedback-area">
+        <details open>
+          <summary>全体の構成・トーン・方向性について</summary>
+          <textarea style="min-height:120px;" placeholder="メール全体の流れ、トーン、不足している情報、修正すべき点など自由にコメントしてください"></textarea>
+          <div class="fb-hint">※ GitHub PR上でもコメント可能です。PRのFiles changedタブから行単位でコメントも入れられます</div>
+        </details>
+      </div>
+    </div>
+
+  </div>
+</body>
+</html>
