@@ -26,7 +26,7 @@
     .header h1 { font-size: 28px; font-weight: 700; margin-bottom: 8px; }
     .header p { font-size: 15px; color: #b8b8d0; }
     .header .meta {
-      display: flex; gap: 24px; margin-top: 20px;
+      display: flex; gap: 24px; margin-top: 20px; flex-wrap: wrap;
       font-size: 13px; color: #9090b0;
     }
     .header .meta span { background: rgba(255,255,255,0.08); padding: 4px 12px; border-radius: 6px; }
@@ -46,6 +46,44 @@
       padding-bottom: 12px;
       border-bottom: 2px solid #eee;
     }
+
+    /* Pattern tabs */
+    .pattern-tabs {
+      display: flex;
+      gap: 0;
+      margin-bottom: 24px;
+      background: #f0f1f5;
+      border-radius: 10px;
+      padding: 4px;
+    }
+    .pattern-tab {
+      flex: 1;
+      padding: 12px 20px;
+      text-align: center;
+      font-size: 14px;
+      font-weight: 600;
+      color: #666;
+      background: transparent;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .pattern-tab.active {
+      background: #fff;
+      color: #302b63;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+    .pattern-tab .tab-sub {
+      display: block;
+      font-size: 11px;
+      font-weight: 400;
+      color: #999;
+      margin-top: 2px;
+    }
+    .pattern-tab.active .tab-sub { color: #888; }
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
 
     /* Flow */
     .flow {
@@ -118,6 +156,7 @@
     .mail-num.m3 { background: #f72585; }
     .mail-num.m4 { background: #ff6d00; }
     .mail-num.m5 { background: #06d6a0; }
+    .mail-num.m6 { background: #8338ec; }
 
     /* Mail detail cards */
     .mail-detail {
@@ -198,7 +237,6 @@
       font-weight: 600;
     }
     .status-pending { background: #fff3e0; color: #e65100; }
-    .status-done { background: #e8f5e9; color: #2e7d32; }
 
     .note {
       display: inline-block;
@@ -244,10 +282,7 @@
       gap: 10px;
       margin-top: 8px;
     }
-    .feedback-area .fb-hint {
-      font-size: 11px;
-      color: #888;
-    }
+    .feedback-area .fb-hint { font-size: 11px; color: #888; }
     .copy-btn {
       padding: 5px 14px;
       font-size: 12px;
@@ -271,16 +306,9 @@
       margin-bottom: 16px;
       border-left: 3px solid #302b63;
     }
-    .cvr-card h4 {
-      font-size: 15px;
-      font-weight: 700;
-      margin-bottom: 8px;
-      color: #302b63;
-    }
+    .cvr-card h4 { font-size: 15px; font-weight: 700; margin-bottom: 8px; color: #302b63; }
     .cvr-card ul { padding-left: 20px; font-size: 14px; }
     .cvr-card li { margin-bottom: 6px; }
-
-    .mail-num.m6 { background: #8338ec; }
 
     /* TOC */
     .toc {
@@ -290,12 +318,7 @@
       margin-bottom: 24px;
       box-shadow: 0 1px 4px rgba(0,0,0,0.06);
     }
-    .toc h2 {
-      font-size: 15px;
-      font-weight: 700;
-      margin-bottom: 12px;
-      color: #555;
-    }
+    .toc h2 { font-size: 15px; font-weight: 700; margin-bottom: 12px; color: #555; }
     .toc ol {
       list-style: none;
       padding: 0;
@@ -315,13 +338,23 @@
     }
     .toc a:hover { background: #e8edff; }
 
-    html { scroll-behavior: smooth; }
+    /* Diff highlight for pattern B */
+    .diff-note {
+      margin-bottom: 16px;
+      padding: 12px 16px;
+      background: #e8f5e9;
+      border-radius: 8px;
+      font-size: 13px;
+      color: #2e7d32;
+      border-left: 3px solid #4caf50;
+    }
 
-    /* Responsive */
+    html { scroll-behavior: smooth; }
     @media (max-width: 768px) {
       .flow { flex-wrap: wrap; gap: 8px; }
       .flow-arrow { display: none; }
       .toc ol { flex-direction: column; }
+      .pattern-tabs { flex-direction: column; }
     }
   </style>
 </head>
@@ -340,17 +373,29 @@
       </div>
     </div>
 
+    <!-- パターン切替タブ -->
+    <div class="pattern-tabs">
+      <button class="pattern-tab active" onclick="switchPattern('a')">
+        パターンA
+        <span class="tab-sub">攻め — PAS+ストーリーテリング</span>
+      </button>
+      <button class="pattern-tab" onclick="switchPattern('b')">
+        パターンB
+        <span class="tab-sub">信頼重視 — 怪しさ払拭・誠実トーン</span>
+      </button>
+    </div>
+
     <!-- 目次 -->
     <nav class="toc">
       <h2>目次</h2>
       <ol>
         <li><a href="#flow">配信フロー</a></li>
         <li><a href="#list">メール一覧</a></li>
-        <li><a href="#mail1">1. 共感・問題提起</a></li>
-        <li><a href="#mail2">2. 危機感の具体化</a></li>
-        <li><a href="#mail3">3. 信頼と解決策</a></li>
-        <li><a href="#mail4">4. 手順と数字</a></li>
-        <li><a href="#mail5">5. 最終行動喚起</a></li>
+        <li><a href="#mail1">1通目</a></li>
+        <li><a href="#mail2">2通目</a></li>
+        <li><a href="#mail3">3通目</a></li>
+        <li><a href="#mail4">4通目</a></li>
+        <li><a href="#mail5">5通目</a></li>
         <li><a href="#checklist">確認事項</a></li>
         <li><a href="#cvr">CVR向上施策</a></li>
       </ol>
@@ -359,41 +404,36 @@
     <!-- 全体フロー -->
     <div class="section" id="flow">
       <h2>配信フロー</h2>
-      <div class="flow">
-        <div class="flow-step">
-          <div class="step-num">1</div>
-          <div class="step-title">共感・問題提起</div>
-          <div class="step-timing">即時配信</div>
+      <!-- Pattern A flow -->
+      <div class="tab-content active" data-pattern="a">
+        <div class="flow">
+          <div class="flow-step"><div class="step-num">1</div><div class="step-title">共感・問題提起</div><div class="step-timing">即時配信</div></div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-step"><div class="step-num">2</div><div class="step-title">危機感の具体化</div><div class="step-timing">+1日</div></div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-step"><div class="step-num">3</div><div class="step-title">信頼と解決策</div><div class="step-timing">+3日</div></div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-step"><div class="step-num">4</div><div class="step-title">手順と数字</div><div class="step-timing">+5日</div></div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-step"><div class="step-num">5</div><div class="step-title">最終行動喚起</div><div class="step-timing">+7日</div></div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-step" style="border: 2px dashed #8338ec;"><div class="step-num" style="background:#8338ec;">6</div><div class="step-title">リマインド</div><div class="step-timing">+9日（案）</div></div>
         </div>
-        <div class="flow-arrow">→</div>
-        <div class="flow-step">
-          <div class="step-num">2</div>
-          <div class="step-title">危機感の具体化</div>
-          <div class="step-timing">+1日</div>
-        </div>
-        <div class="flow-arrow">→</div>
-        <div class="flow-step">
-          <div class="step-num">3</div>
-          <div class="step-title">信頼と解決策</div>
-          <div class="step-timing">+3日</div>
-        </div>
-        <div class="flow-arrow">→</div>
-        <div class="flow-step">
-          <div class="step-num">4</div>
-          <div class="step-title">手順と数字</div>
-          <div class="step-timing">+5日</div>
-        </div>
-        <div class="flow-arrow">→</div>
-        <div class="flow-step">
-          <div class="step-num">5</div>
-          <div class="step-title">最終行動喚起</div>
-          <div class="step-timing">+7日</div>
-        </div>
-        <div class="flow-arrow">→</div>
-        <div class="flow-step" style="border: 2px dashed #8338ec;">
-          <div class="step-num" style="background:#8338ec;">6</div>
-          <div class="step-title">リマインド</div>
-          <div class="step-timing">+9日（案）</div>
+      </div>
+      <!-- Pattern B flow -->
+      <div class="tab-content" data-pattern="b">
+        <div class="flow">
+          <div class="flow-step"><div class="step-num">1</div><div class="step-title">歓迎・自己紹介</div><div class="step-timing">即時配信</div></div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-step"><div class="step-num">2</div><div class="step-title">背景の共有</div><div class="step-timing">+1日</div></div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-step"><div class="step-num">3</div><div class="step-title">仕組みの透明化</div><div class="step-timing">+3日</div></div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-step"><div class="step-num">4</div><div class="step-title">リスクと始め方</div><div class="step-timing">+5日</div></div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-step"><div class="step-num">5</div><div class="step-title">判断の後押し</div><div class="step-timing">+7日</div></div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-step" style="border: 2px dashed #8338ec;"><div class="step-num" style="background:#8338ec;">6</div><div class="step-title">リマインド</div><div class="step-timing">+9日（案）</div></div>
         </div>
       </div>
     </div>
@@ -401,69 +441,47 @@
     <!-- メール一覧 -->
     <div class="section" id="list">
       <h2>メール一覧</h2>
-      <table class="mail-table">
-        <thead>
-          <tr>
-            <th style="width:50px">#</th>
-            <th>件名</th>
-            <th>配信</th>
-            <th>目的</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td><span class="mail-num m1">1</span></td>
-            <td>銀行に預けたままの円、毎年"目減り"しているかもしれません</td>
-            <td>即時</td>
-            <td>共感・問題提起・即CV導線</td>
-          </tr>
-          <tr>
-            <td><span class="mail-num m2">2</span></td>
-            <td>10年後、あなたの100万円は「実質78万円」になっているかもしれません</td>
-            <td>+1日</td>
-            <td>危機感の具体化・第三の選択肢</td>
-          </tr>
-          <tr>
-            <td><span class="mail-num m3">3</span></td>
-            <td>利回りは"どこから"生まれるのか——Morphoの仕組み</td>
-            <td>+3日</td>
-            <td>信頼構築・仕組みの透明化</td>
-          </tr>
-          <tr>
-            <td><span class="mail-num m4">4</span></td>
-            <td>「やってみたら5分だった」——始め方と、具体的な数字の話</td>
-            <td>+5日</td>
-            <td>手順・シミュレーション・ハードル低減</td>
-          </tr>
-          <tr>
-            <td><span class="mail-num m5">5</span></td>
-            <td>1年後、「あの時始めてよかった」と思えるように</td>
-            <td>+7日</td>
-            <td>最終CTA・FAQ・損失回避</td>
-          </tr>
-          <tr style="background: #faf5ff;">
-            <td><span class="mail-num m6">6</span></td>
-            <td>特典の受け取り期限があと○日です（案）</td>
-            <td>+9日</td>
-            <td>リマインド・緊急性付与</td>
-          </tr>
-        </tbody>
-      </table>
+      <!-- Pattern A table -->
+      <div class="tab-content active" data-pattern="a">
+        <table class="mail-table">
+          <thead><tr><th style="width:50px">#</th><th>件名</th><th>配信</th><th>目的</th></tr></thead>
+          <tbody>
+            <tr><td><span class="mail-num m1">1</span></td><td>銀行に預けたままの円、毎年"目減り"しているかもしれません</td><td>即時</td><td>共感・問題提起・即CV導線</td></tr>
+            <tr><td><span class="mail-num m2">2</span></td><td>10年後、あなたの100万円は「実質78万円」になっているかもしれません</td><td>+1日</td><td>危機感の具体化・第三の選択肢</td></tr>
+            <tr><td><span class="mail-num m3">3</span></td><td>利回りは"どこから"生まれるのか——Morphoの仕組み</td><td>+3日</td><td>信頼構築・仕組みの透明化</td></tr>
+            <tr><td><span class="mail-num m4">4</span></td><td>「やってみたら5分だった」——始め方と、具体的な数字の話</td><td>+5日</td><td>手順・シミュレーション・ハードル低減</td></tr>
+            <tr><td><span class="mail-num m5">5</span></td><td>1年後、「あの時始めてよかった」と思えるように</td><td>+7日</td><td>最終CTA・FAQ・損失回避</td></tr>
+            <tr style="background:#faf5ff;"><td><span class="mail-num m6">6</span></td><td>特典の受け取り期限があと○日です（案）</td><td>+9日</td><td>リマインド・緊急性付与</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <!-- Pattern B table -->
+      <div class="tab-content" data-pattern="b">
+        <table class="mail-table">
+          <thead><tr><th style="width:50px">#</th><th>件名</th><th>配信</th><th>目的</th></tr></thead>
+          <tbody>
+            <tr><td><span class="mail-num m1">1</span></td><td>JPYRにご登録いただいた方へ——まず、私たちのことを知ってください</td><td>即時</td><td>歓迎・信頼の土台づくり</td></tr>
+            <tr><td><span class="mail-num m2">2</span></td><td>なぜ「日本円のステーブルトークン」を作ったのか</td><td>+1日</td><td>背景・課題共有（押し付けない）</td></tr>
+            <tr><td><span class="mail-num m3">3</span></td><td>「利回り」の正体——仕組みとリスクを包み隠さずお伝えします</td><td>+3日</td><td>Morphoの仕組み＋リスク開示</td></tr>
+            <tr><td><span class="mail-num m4">4</span></td><td>始め方と、始める前に知っておくべきこと</td><td>+5日</td><td>手順＋リスク再確認＋少額推奨</td></tr>
+            <tr><td><span class="mail-num m5">5</span></td><td>判断するための材料は揃いました</td><td>+7日</td><td>FAQ＋選択の尊重＋CTA</td></tr>
+            <tr style="background:#faf5ff;"><td><span class="mail-num m6">6</span></td><td>その後、ご不明点はありませんか？（案）</td><td>+9日</td><td>フォロー・質問受付</td></tr>
+          </tbody>
+        </table>
+      </div>
     </div>
 
     <!-- 各メール詳細 -->
     <div class="section">
       <h2>各メール詳細</h2>
 
-      <!-- Mail 1 -->
-      <div class="mail-detail m1" id="mail1">
-        <div class="mail-header">
-          <span class="mail-num m1">1</span>
-          <h3>共感・問題提起 + CV導線</h3>
-          <span class="timing">即時配信</span>
-        </div>
-        <div class="subject">件名: 銀行に預けたままの円、毎年"目減り"しているかもしれません</div>
-        <div class="body">お名前 様
+      <!-- ===== MAIL 1 ===== -->
+      <!-- Pattern A -->
+      <div class="tab-content active" data-pattern="a" id="mail1">
+        <div class="mail-detail m1">
+          <div class="mail-header"><span class="mail-num m1">1</span><h3>共感・問題提起 + CV導線</h3><span class="timing">即時配信</span></div>
+          <div class="subject">件名: 銀行に預けたままの円、毎年"目減り"しているかもしれません</div>
+          <div class="body">お名前 様
 
 JPYRにご登録いただきありがとうございます。
 
@@ -503,28 +521,68 @@ JPYRにご登録いただきありがとうございます。
 
 ――――――――
 JPYR公式サイト: https://jpyr.online/</div>
-        <div class="intent"><strong>意図:</strong> 冒頭の質問で自分ごと化 → インフレによる実質目減りの数字で「何もしないリスク」を具体的に描写 → 解決策の予告で次回への期待感。即行動できる人向けのCV導線も設置</div>
-        <div class="feedback-area">
-          <details>
-            <summary>この通についてフィードバック</summary>
-            <textarea placeholder="内容・トーン・構成への気になる点やコメントを記入してください"></textarea>
-            <div class="fb-actions">
-              <button class="copy-btn" onclick="copyFeedback(this)">コピー</button>
-              <span class="fb-hint">記入後コピーして共有してください</span>
-            </div>
-          </details>
+          <div class="intent"><strong>意図:</strong> 冒頭の質問で自分ごと化 → インフレによる実質目減りの数字で「何もしないリスク」を描写 → 即CV導線も設置</div>
+          <div class="feedback-area"><details><summary>この通についてフィードバック</summary><textarea placeholder="内容・トーン・構成への気になる点やコメントを記入してください"></textarea><div class="fb-actions"><button class="copy-btn" onclick="copyFeedback(this)">コピー</button><span class="fb-hint">記入後コピーして共有してください</span></div></details></div>
+        </div>
+      </div>
+      <!-- Pattern B -->
+      <div class="tab-content" data-pattern="b">
+        <div class="diff-note">パターンBの特徴: 煽らない。まず「誰が送っているのか」を明かし、信頼の土台を作ってから情報提供に入る</div>
+        <div class="mail-detail m1">
+          <div class="mail-header"><span class="mail-num m1">1</span><h3>歓迎・自己紹介</h3><span class="timing">即時配信</span></div>
+          <div class="subject">件名: JPYRにご登録いただいた方へ——まず、私たちのことを知ってください</div>
+          <div class="body">お名前 様
+
+JPYRにご登録いただきありがとうございます。
+
+はじめまして。
+JPYRの運営チームです。
+
+メールをお送りする前に、
+まず私たちが何者で、なぜこのプロジェクトをやっているのか
+お伝えさせてください。
+
+JPYRは、日本円に価値が連動する「ステーブルトークン」です。
+ステーブルトークンとは、特定の通貨に価値が紐づくことで
+暗号資産特有の激しい値動きを抑えたデジタル資産のこと。
+
+私たちがJPYRを作った理由はシンプルです。
+
+「日本円の安心感を持ったまま、
+ ブロックチェーンの利便性を使えるようにしたい。」
+
+暗号資産と聞くと、
+「値動きが怖い」「よくわからない」「詐欺っぽい」
+——そんなイメージをお持ちの方も多いと思います。
+
+正直に言えば、その警戒心は正しいです。
+
+だからこそ、このメールシリーズでは
+仕組みもリスクもすべて開示した上で、
+「自分にとって必要かどうか」をご自身で判断していただけるよう
+情報をお届けします。
+
+全4回、お付き合いいただければ幸いです。
+
+――――――――
+JPYR公式サイト: https://jpyr.online/
+（※運営会社情報・問い合わせ先）
+
+※すでにJPYRをお持ちで運用を始めたい方は、
+こちらからMorphoでのステーキングが可能です:
+（※MorphoのJPYRステーキングページURL）</div>
+          <div class="intent"><strong>意図:</strong> まず「誰が送っているのか」を明かし、読者の警戒心に共感する。売り込みゼロの1通目で信頼の土台を作る。CV導線はフッターに控えめに配置</div>
+          <div class="feedback-area"><details><summary>この通についてフィードバック</summary><textarea placeholder="内容・トーン・構成への気になる点やコメントを記入してください"></textarea><div class="fb-actions"><button class="copy-btn" onclick="copyFeedback(this)">コピー</button><span class="fb-hint">記入後コピーして共有してください</span></div></details></div>
         </div>
       </div>
 
-      <!-- Mail 2 -->
-      <div class="mail-detail m2" id="mail2">
-        <div class="mail-header">
-          <span class="mail-num m2">2</span>
-          <h3>危機感の具体化</h3>
-          <span class="timing">+1日</span>
-        </div>
-        <div class="subject">件名: 10年後、あなたの100万円は「実質78万円」になっているかもしれません</div>
-        <div class="body">お名前 様
+      <!-- ===== MAIL 2 ===== -->
+      <!-- Pattern A -->
+      <div class="tab-content active" data-pattern="a" id="mail2">
+        <div class="mail-detail m2">
+          <div class="mail-header"><span class="mail-num m2">2</span><h3>危機感の具体化</h3><span class="timing">+1日</span></div>
+          <div class="subject">件名: 10年後、あなたの100万円は「実質78万円」になっているかもしれません</div>
+          <div class="body">お名前 様
 
 昨日のメールで、
 銀行預金が実質的に目減りしている話をしました。
@@ -576,28 +634,75 @@ JPYRの運用先である「Morpho」についてお伝えします。
 JPYR公式サイト: https://jpyr.online/
 
 ※本メールは情報提供を目的としたものであり、特定の金融商品への投資を推奨するものではありません。投資判断はご自身の責任において行ってください。</div>
-        <div class="intent"><strong>意図:</strong> PASのAgitation。10年シミュレーションで「何もしない未来」を数字で可視化 → 投資への不安に共感 → JPYRを「第三の選択肢」として位置づけ</div>
-        <div class="feedback-area">
-          <details>
-            <summary>この通についてフィードバック</summary>
-            <textarea placeholder="内容・トーン・構成への気になる点やコメントを記入してください"></textarea>
-            <div class="fb-actions">
-              <button class="copy-btn" onclick="copyFeedback(this)">コピー</button>
-              <span class="fb-hint">記入後コピーして共有してください</span>
-            </div>
-          </details>
+          <div class="intent"><strong>意図:</strong> 10年シミュレーションで「何もしない未来」を可視化 → 投資への不安に共感 → JPYRを「第三の選択肢」として提示</div>
+          <div class="feedback-area"><details><summary>この通についてフィードバック</summary><textarea placeholder="内容・トーン・構成への気になる点やコメントを記入してください"></textarea><div class="fb-actions"><button class="copy-btn" onclick="copyFeedback(this)">コピー</button><span class="fb-hint">記入後コピーして共有してください</span></div></details></div>
+        </div>
+      </div>
+      <!-- Pattern B -->
+      <div class="tab-content" data-pattern="b">
+        <div class="mail-detail m2">
+          <div class="mail-header"><span class="mail-num m2">2</span><h3>背景の共有</h3><span class="timing">+1日</span></div>
+          <div class="subject">件名: なぜ「日本円のステーブルトークン」を作ったのか</div>
+          <div class="body">お名前 様
+
+昨日は自己紹介のメールを読んでいただきありがとうございます。
+
+今日は、JPYRを作った背景についてお話しします。
+
+---
+
+日本の銀行預金の金利は、
+現在おおよそ年0.10〜0.20%です。
+
+100万円を1年預けて、利息は1,000〜2,000円。
+一方、物価の上昇率（インフレ率）はここ数年2.5〜3%前後。
+
+つまり、銀行に預けているだけでは
+お金の「実質的な価値」は少しずつ下がっている
+——これは事実として押さえておくべき数字です。
+
+ただ、ここで「だから今すぐ投資しないと損です！」
+と言うつもりはありません。
+
+私たちが伝えたいのは、
+「選択肢を知っておくことに意味がある」
+ということです。
+
+---
+
+JPYRは、日本円に価値が連動するステーブルトークンです。
+
+暗号資産と聞くと値動きの激しさをイメージしますが、
+ステーブルトークンは特定の通貨（この場合は円）に
+価値が紐づくよう設計されているため、
+ビットコインのような乱高下は起きにくい仕組みです。
+
+そして、JPYRをDeFi（分散型金融）の
+レンディングプロトコルに預けることで、
+銀行預金とは異なる水準の利回りを目指すことができます。
+
+「それって安全なの？」「利回りの出どころは？」
+
+当然の疑問です。
+次回のメールで、仕組みとリスクの両方を
+包み隠さずお伝えします。
+
+――――――――
+JPYR公式サイト: https://jpyr.online/
+
+※本メールは情報提供を目的としたものであり、投資を推奨するものではありません。</div>
+          <div class="intent"><strong>意図:</strong> インフレの事実は提示するが「煽り」にしない。「だから投資しろ」ではなく「選択肢を知る意味がある」というスタンス。疑問を先取りして次回へ繋げる</div>
+          <div class="feedback-area"><details><summary>この通についてフィードバック</summary><textarea placeholder="内容・トーン・構成への気になる点やコメントを記入してください"></textarea><div class="fb-actions"><button class="copy-btn" onclick="copyFeedback(this)">コピー</button><span class="fb-hint">記入後コピーして共有してください</span></div></details></div>
         </div>
       </div>
 
-      <!-- Mail 3 -->
-      <div class="mail-detail m3" id="mail3">
-        <div class="mail-header">
-          <span class="mail-num m3">3</span>
-          <h3>信頼と解決策（Morphoの仕組み）</h3>
-          <span class="timing">+3日</span>
-        </div>
-        <div class="subject">件名: 利回りは"どこから"生まれるのか——Morphoの仕組み</div>
-        <div class="body">お名前 様
+      <!-- ===== MAIL 3 ===== -->
+      <!-- Pattern A -->
+      <div class="tab-content active" data-pattern="a" id="mail3">
+        <div class="mail-detail m3">
+          <div class="mail-header"><span class="mail-num m3">3</span><h3>信頼と解決策（Morphoの仕組み）</h3><span class="timing">+3日</span></div>
+          <div class="subject">件名: 利回りは"どこから"生まれるのか——Morphoの仕組み</div>
+          <div class="body">お名前 様
 
 前回のメールを読んで、
 こう思った方もいるかもしれません。
@@ -657,28 +762,98 @@ Morphoの信頼性を示す事実をいくつか。
 Morpho公式サイト: https://morpho.org/
 
 ※DeFiプロトコルの利用にはスマートコントラクトリスク等が伴います。余裕資金での運用をお勧めします。</div>
-        <div class="intent"><strong>意図:</strong> 「利回りの出どころ」を銀行との対比で説明し怪しさを払拭。セキュリティ情報を具体的に提示しつつリスクも正直に書くことで信頼構築。「知った上で判断する」スタンス</div>
-        <div class="feedback-area">
-          <details>
-            <summary>この通についてフィードバック</summary>
-            <textarea placeholder="内容・トーン・構成への気になる点やコメントを記入してください"></textarea>
-            <div class="fb-actions">
-              <button class="copy-btn" onclick="copyFeedback(this)">コピー</button>
-              <span class="fb-hint">記入後コピーして共有してください</span>
-            </div>
-          </details>
+          <div class="intent"><strong>意図:</strong> 利回りの出どころを銀行との対比で説明し怪しさを払拭。リスクも正直に書くことで信頼構築</div>
+          <div class="feedback-area"><details><summary>この通についてフィードバック</summary><textarea placeholder="内容・トーン・構成への気になる点やコメントを記入してください"></textarea><div class="fb-actions"><button class="copy-btn" onclick="copyFeedback(this)">コピー</button><span class="fb-hint">記入後コピーして共有してください</span></div></details></div>
+        </div>
+      </div>
+      <!-- Pattern B -->
+      <div class="tab-content" data-pattern="b">
+        <div class="mail-detail m3">
+          <div class="mail-header"><span class="mail-num m3">3</span><h3>仕組みの透明化 + リスク開示</h3><span class="timing">+3日</span></div>
+          <div class="subject">件名: 「利回り」の正体——仕組みとリスクを包み隠さずお伝えします</div>
+          <div class="body">お名前 様
+
+前回のメールの最後に、
+「利回りの仕組みとリスクを包み隠さずお伝えします」
+とお約束しました。
+
+今回はその約束を果たします。
+良いことだけでなく、悪いことも書きます。
+
+---
+
+まず、利回りの仕組みから。
+
+JPYRの運用先は「Morpho」というプロトコルです。
+
+Morphoは、ブロックチェーン上で
+「お金を借りたい人」と「貸したい人」を
+スマートコントラクト（自動実行プログラム）で直接つなぎます。
+
+仕組みとしては銀行と同じです。
+あなたが預けたJPYRは、借り手への貸付に回る。
+その利息の一部が、あなたへのリワードになる。
+
+銀行との違いは「仲介者がいない」こと。
+銀行が取るマージンがない分、
+貸し手に還元される割合が大きくなります。
+これが利回りの正体です。
+
+魔法ではありません。経済の仕組みです。
+
+---
+
+次に、リスクについて。
+ここは正直にお伝えします。
+
+1. スマートコントラクトリスク
+プログラムにバグがあった場合、資産が失われる可能性があります。
+Morphoは Spearbit、Trail of Bits 等の一流企業による監査を受けており、
+コアコードは約650行と非常にシンプルですが、
+リスクがゼロになることはありません。
+
+2. 利回りの変動
+利回りは固定ではなく、市場の需給で変動します。
+高い時もあれば、低い時もあります。
+「確実に○%」とは言えません。
+
+3. 流動性リスク
+市場環境によっては、
+希望するタイミングで引き出せない可能性があります。
+
+4. 規制リスク
+暗号資産・DeFiに関する規制は発展途上です。
+将来の法改正により、利用条件が変わる可能性があります。
+
+---
+
+こう書くと「やっぱり怖い」と思うかもしれません。
+それも正しい反応です。
+
+大事なのは、
+「リスクを知らないまま始める」でも
+「リスクを知らないまま避ける」でもなく、
+「仕組みとリスクを理解した上で、自分で判断する」こと。
+
+次回は、具体的な始め方と想定利回りの数字をお伝えします。
+
+――――――――
+Morpho公式サイト: https://morpho.org/
+Morpho監査レポート: （※URLがあれば記載）
+
+※本メールは情報提供を目的としたものであり、投資を推奨するものではありません。</div>
+          <div class="intent"><strong>意図:</strong> リスクを4項目に分解して具体的に開示。「良いことだけでなく悪いことも書く」と宣言してから書くことで、情報の信頼性自体を高める。怪しさの最大要因は「都合の良い話しかしない」ことなので、それを逆手に取る</div>
+          <div class="feedback-area"><details><summary>この通についてフィードバック</summary><textarea placeholder="内容・トーン・構成への気になる点やコメントを記入してください"></textarea><div class="fb-actions"><button class="copy-btn" onclick="copyFeedback(this)">コピー</button><span class="fb-hint">記入後コピーして共有してください</span></div></details></div>
         </div>
       </div>
 
-      <!-- Mail 4 -->
-      <div class="mail-detail m4" id="mail4">
-        <div class="mail-header">
-          <span class="mail-num m4">4</span>
-          <h3>手順と数字</h3>
-          <span class="timing">+5日</span>
-        </div>
-        <div class="subject">件名: 「やってみたら5分だった」——始め方と、具体的な数字の話</div>
-        <div class="body">お名前 様
+      <!-- ===== MAIL 4 ===== -->
+      <!-- Pattern A -->
+      <div class="tab-content active" data-pattern="a" id="mail4">
+        <div class="mail-detail m4">
+          <div class="mail-header"><span class="mail-num m4">4</span><h3>手順と数字</h3><span class="timing">+5日</span></div>
+          <div class="subject">件名: 「やってみたら5分だった」——始め方と、具体的な数字の話</div>
+          <div class="body">お名前 様
 
 ここまでのメールで、
 
@@ -748,28 +923,85 @@ Morphoにウォレットを接続 → 預ける金額を入力 → 確認。
 
 ――――――――
 ご不明点はこのメールへの返信でお気軽にどうぞ。</div>
-        <div class="intent"><strong>意図:</strong> 数字のシミュレーションで「始めた未来」を可視化 → 手順を3ステップに分解してハードルを最小化 → 「少額でOK」で心理的ハードルも下げる</div>
-        <div class="feedback-area">
-          <details>
-            <summary>この通についてフィードバック</summary>
-            <textarea placeholder="内容・トーン・構成への気になる点やコメントを記入してください"></textarea>
-            <div class="fb-actions">
-              <button class="copy-btn" onclick="copyFeedback(this)">コピー</button>
-              <span class="fb-hint">記入後コピーして共有してください</span>
-            </div>
-          </details>
+          <div class="intent"><strong>意図:</strong> シミュレーションで「始めた未来」を可視化 → 3ステップでハードル最小化 → 少額推奨で心理的ハードルも下げる</div>
+          <div class="feedback-area"><details><summary>この通についてフィードバック</summary><textarea placeholder="内容・トーン・構成への気になる点やコメントを記入してください"></textarea><div class="fb-actions"><button class="copy-btn" onclick="copyFeedback(this)">コピー</button><span class="fb-hint">記入後コピーして共有してください</span></div></details></div>
+        </div>
+      </div>
+      <!-- Pattern B -->
+      <div class="tab-content" data-pattern="b">
+        <div class="mail-detail m4">
+          <div class="mail-header"><span class="mail-num m4">4</span><h3>リスクと始め方</h3><span class="timing">+5日</span></div>
+          <div class="subject">件名: 始め方と、始める前に知っておくべきこと</div>
+          <div class="body">お名前 様
+
+前回はMorphoの仕組みとリスクをお伝えしました。
+
+今回は「始め方」と「始める前に知っておくべきこと」
+の2つをお届けします。
+
+---
+
+まず、想定利回りについて。
+
+（※実際のAPYに基づいて差し替え——要確認）
+
+現在のMorpho上でのJPYRの利回りは年○%前後です。
+（この数値は市場の需給で日々変動します。
+ 過去の実績であり、将来を保証するものではありません。）
+
+参考までに、銀行普通預金の金利は年0.10〜0.20%。
+差があるのは事実ですが、
+「高い利回り＝高いリスク」であることも
+セットで理解しておいてください。
+
+---
+
+始め方は3ステップです。
+
+ステップ1: JPYRを取得する
+（※取得方法・導線を記載——要確認）
+
+ステップ2: ウォレットを準備する
+MetaMask等のウォレットアプリをインストール。
+スマホで5分程度で完了します。
+
+ステップ3: MorphoでJPYRを預け入れる
+ウォレットをMorphoに接続し、金額を入力して確認。
+
+（※画面キャプチャ付きの操作ガイドがあると、より安心して進められます）
+
+---
+
+始める前に、これだけは守ってください。
+
+- 余裕資金で始める（生活費や緊急資金は使わない）
+- 最初は少額から（1万円〜で十分です）
+- 仕組みを理解してから預ける（前回のメールを読み返すのもおすすめ）
+- わからないことがあれば、始める前に質問する
+
+このメールへの返信で質問を受け付けています。
+「こんな初歩的なこと聞いていいのかな」
+——まったく問題ありません。むしろ歓迎です。
+
+次回が最後のメールです。
+よくある質問と、ステーキングページへのリンクをお届けします。
+
+――――――――
+ご不明点はこのメールへの返信でお気軽にどうぞ。
+
+※暗号資産の利益は雑所得として課税対象です。年間20万円を超える利益がある場合、確定申告が必要になる場合があります。</div>
+          <div class="intent"><strong>意図:</strong> 利回りを提示しつつ「高利回り＝高リスク」を明示。「守ってほしいこと」リストで誠実さを示す。質問を歓迎する姿勢で心理的安全性を確保</div>
+          <div class="feedback-area"><details><summary>この通についてフィードバック</summary><textarea placeholder="内容・トーン・構成への気になる点やコメントを記入してください"></textarea><div class="fb-actions"><button class="copy-btn" onclick="copyFeedback(this)">コピー</button><span class="fb-hint">記入後コピーして共有してください</span></div></details></div>
         </div>
       </div>
 
-      <!-- Mail 5 -->
-      <div class="mail-detail m5" id="mail5">
-        <div class="mail-header">
-          <span class="mail-num m5">5</span>
-          <h3>最終行動喚起</h3>
-          <span class="timing">+7日</span>
-        </div>
-        <div class="subject">件名: 1年後、「あの時始めてよかった」と思えるように</div>
-        <div class="body">お名前 様
+      <!-- ===== MAIL 5 ===== -->
+      <!-- Pattern A -->
+      <div class="tab-content active" data-pattern="a" id="mail5">
+        <div class="mail-detail m5">
+          <div class="mail-header"><span class="mail-num m5">5</span><h3>最終行動喚起</h3><span class="timing">+7日</span></div>
+          <div class="subject">件名: 1年後、「あの時始めてよかった」と思えるように</div>
+          <div class="body">お名前 様
 
 この1週間、お付き合いいただきありがとうございます。
 
@@ -843,29 +1075,101 @@ JPYR公式サイト: https://jpyr.online/
 Morpho公式サイト: https://morpho.org/
 
 ※本メールは情報提供を目的としたものであり、特定の金融商品への投資を推奨するものではありません。暗号資産の取引にはリスクが伴います。投資判断はご自身の責任において行ってください。</div>
-        <div class="intent"><strong>意図:</strong> 「知っている、でもやっていない」を言語化 → 時間の不可逆性と複利で「今やる理由」提示 → FAQ（税金も追加）→ 少額CTAで最後のハードルを下げる</div>
-        <div class="feedback-area">
-          <details>
-            <summary>この通についてフィードバック</summary>
-            <textarea placeholder="内容・トーン・構成への気になる点やコメントを記入してください"></textarea>
-            <div class="fb-actions">
-              <button class="copy-btn" onclick="copyFeedback(this)">コピー</button>
-              <span class="fb-hint">記入後コピーして共有してください</span>
-            </div>
-          </details>
+          <div class="intent"><strong>意図:</strong> 「知っている、でもやっていない」を言語化 → 時間の不可逆性と複利で行動喚起 → FAQ+少額CTA</div>
+          <div class="feedback-area"><details><summary>この通についてフィードバック</summary><textarea placeholder="内容・トーン・構成への気になる点やコメントを記入してください"></textarea><div class="fb-actions"><button class="copy-btn" onclick="copyFeedback(this)">コピー</button><span class="fb-hint">記入後コピーして共有してください</span></div></details></div>
+        </div>
+      </div>
+      <!-- Pattern B -->
+      <div class="tab-content" data-pattern="b">
+        <div class="mail-detail m5">
+          <div class="mail-header"><span class="mail-num m5">5</span><h3>判断の後押し</h3><span class="timing">+7日</span></div>
+          <div class="subject">件名: 判断するための材料は揃いました</div>
+          <div class="body">お名前 様
+
+この1週間、お付き合いいただきありがとうございます。
+
+ここまでのメールで、
+
+- JPYRとは何か、なぜ作られたのか
+- 日本円の実質的な目減りという背景
+- Morphoの仕組みと利回りの正体
+- 4つのリスク（スマコン、利回り変動、流動性、規制）
+- 始め方の3ステップと、始める前に守るべきこと
+
+をお伝えしてきました。
+
+判断するための材料は、揃ったと思います。
+
+---
+
+ここからは、あなた自身の判断です。
+
+「今の自分にとって、試す価値があるか」
+「リスクを取れる余裕資金はあるか」
+「仕組みを十分に理解できたか」
+
+すべてYesなら、こちらからどうぞ。
+
+▼ Morphoでステーキングを始める
+（※MorphoのJPYRステーキングページURL）
+
+「まだ迷っている」「もう少し考えたい」
+——それもまったく正しい判断です。
+無理に急ぐ必要はありません。
+
+---
+
+よくある質問をまとめました。
+
+Q. いつでも引き出せますか？
+A.（※要確認）
+
+Q. 最低いくらから始められますか？
+A.（※要確認）
+
+Q. リスクはありますか？
+A. はい、あります。前回のメールで4つのリスクを
+詳しくお伝えしました。元本保証はありません。
+余裕資金の一部から始めることを強くお勧めします。
+
+Q. 暗号資産の税金はどうなりますか？
+A. 暗号資産の利益は雑所得として課税対象です。
+年間20万円を超える利益がある場合、確定申告が必要になる場合があります。
+詳しくは税理士等の専門家にご相談ください。
+
+Q. 質問がある場合は？
+A. このメールへの返信で、いつでもお気軽にどうぞ。
+「こんな初歩的なことを聞いていいのかな」
+——まったく問題ありません。
+
+---
+
+最後に。
+
+私たちは「全員が始めるべき」とは思っていません。
+ただ、「知らないから選べない」という状態は
+もったいないと考えています。
+
+このメールシリーズが、
+あなたの判断材料のひとつになれば幸いです。
+
+――――――――
+JPYR公式サイト: https://jpyr.online/
+Morpho公式サイト: https://morpho.org/
+
+※本メールは情報提供を目的としたものであり、特定の金融商品への投資を推奨するものではありません。暗号資産の取引にはリスクが伴います。投資判断はご自身の責任において行ってください。</div>
+          <div class="intent"><strong>意図:</strong> 「判断材料は揃った。あとはあなた次第」というスタンス。「迷っているならやらなくてもいい」と明言することで、逆に信頼感が上がり行動率も維持される。"売り込まないことが最大の売り込み"アプローチ</div>
+          <div class="feedback-area"><details><summary>この通についてフィードバック</summary><textarea placeholder="内容・トーン・構成への気になる点やコメントを記入してください"></textarea><div class="fb-actions"><button class="copy-btn" onclick="copyFeedback(this)">コピー</button><span class="fb-hint">記入後コピーして共有してください</span></div></details></div>
         </div>
       </div>
 
-      <!-- Mail 6 (案) -->
-      <div class="mail-detail" id="mail6" style="border-left: 4px dashed #8338ec;">
-        <div class="mail-header">
-          <span class="mail-num m6">6</span>
-          <h3>リマインドメール（案）</h3>
-          <span class="timing">+9日</span>
-          <span class="note">検討中</span>
-        </div>
-        <div class="subject">件名: 特典の受け取り期限があと○日です</div>
-        <div class="body">お名前 様
+      <!-- ===== MAIL 6 ===== -->
+      <!-- Pattern A -->
+      <div class="tab-content active" data-pattern="a">
+        <div class="mail-detail" id="mail6" style="border-left: 4px dashed #8338ec;">
+          <div class="mail-header"><span class="mail-num m6">6</span><h3>リマインドメール（案）</h3><span class="timing">+9日</span><span class="note">検討中</span></div>
+          <div class="subject">件名: 特典の受け取り期限があと○日です</div>
+          <div class="body">お名前 様
 
 ○月○日までにステーキングを開始された方に、
 ○○をプレゼントしています。
@@ -882,87 +1186,62 @@ Morpho公式サイト: https://morpho.org/
 
 ――――――――
 ご不明点はこのメールへの返信でお気軽にどうぞ。</div>
-        <div class="intent"><strong>意図:</strong> 5通目で未行動の人に緊急性で後押し。要点を3行に圧縮し、すぐ行動に移れるようにする</div>
-        <div class="feedback-area">
-          <details>
-            <summary>この通についてフィードバック</summary>
-            <textarea placeholder="6通目を追加すべきか、特典の内容、タイミング等のコメントを記入してください"></textarea>
-            <div class="fb-actions">
-              <button class="copy-btn" onclick="copyFeedback(this)">コピー</button>
-              <span class="fb-hint">記入後コピーして共有してください</span>
-            </div>
-          </details>
+          <div class="intent"><strong>意図:</strong> 5通目で未行動の人に緊急性で後押し</div>
+          <div class="feedback-area"><details><summary>この通についてフィードバック</summary><textarea placeholder="6通目を追加すべきか、特典の内容、タイミング等のコメントを記入してください"></textarea><div class="fb-actions"><button class="copy-btn" onclick="copyFeedback(this)">コピー</button><span class="fb-hint">記入後コピーして共有してください</span></div></details></div>
         </div>
       </div>
+      <!-- Pattern B -->
+      <div class="tab-content" data-pattern="b">
+        <div class="mail-detail" style="border-left: 4px dashed #8338ec;">
+          <div class="mail-header"><span class="mail-num m6">6</span><h3>フォローメール（案）</h3><span class="timing">+9日</span><span class="note">検討中</span></div>
+          <div class="subject">件名: その後、ご不明点はありませんか？</div>
+          <div class="body">お名前 様
+
+先日までのメールシリーズを
+お読みいただきありがとうございました。
+
+その後、
+何かご不明な点やご質問はありませんか？
+
+「メールを読んで気になったけど、
+ 聞くタイミングを逃してしまった」
+——そんな方がいらっしゃれば、
+このメールへの返信でお気軽にどうぞ。
+
+よくいただく質問:
+- 「ウォレットの作り方がわからない」
+- 「JPYRの取得方法をもう一度教えてほしい」
+- 「リスクについてもう少し詳しく知りたい」
+
+どんな内容でも構いません。
+
+▼ ステーキングを始める準備ができた方はこちら
+（※MorphoのJPYRステーキングページURL）
+
+――――――――
+JPYR運営チーム</div>
+          <div class="intent"><strong>意図:</strong> 押し売りではなくフォロー。「質問していいんだ」という安心感を与え、未行動者のうち情報不足で止まっている層を拾う</div>
+          <div class="feedback-area"><details><summary>この通についてフィードバック</summary><textarea placeholder="6通目を追加すべきか、特典の内容、タイミング等のコメントを記入してください"></textarea><div class="fb-actions"><button class="copy-btn" onclick="copyFeedback(this)">コピー</button><span class="fb-hint">記入後コピーして共有してください</span></div></details></div>
+        </div>
+      </div>
+
     </div>
 
     <!-- 確認事項チェックリスト -->
     <div class="section" id="checklist">
       <h2>確認事項</h2>
       <table class="checklist">
-        <thead>
-          <tr>
-            <th style="width:40px">#</th>
-            <th>確認事項</th>
-            <th>該当メール</th>
-            <th>ステータス</th>
-          </tr>
-        </thead>
+        <thead><tr><th style="width:40px">#</th><th>確認事項</th><th>該当メール</th><th>ステータス</th></tr></thead>
         <tbody>
-          <tr>
-            <td>1</td>
-            <td>JPYRの取得方法・購入導線の具体的な記載</td>
-            <td>4通目</td>
-            <td><span class="status status-pending">未確認</span></td>
-          </tr>
-          <tr>
-            <td>2</td>
-            <td>現在のAPY（想定利回り）の数値</td>
-            <td>4通目</td>
-            <td><span class="status status-pending">未確認</span></td>
-          </tr>
-          <tr>
-            <td>3</td>
-            <td>MorphoでのJPYR専用ステーキングページURL</td>
-            <td>1・5通目</td>
-            <td><span class="status status-pending">未確認</span></td>
-          </tr>
-          <tr>
-            <td>4</td>
-            <td>引き出し条件・最低ステーキング額</td>
-            <td>5通目</td>
-            <td><span class="status status-pending">未確認</span></td>
-          </tr>
-          <tr>
-            <td>5</td>
-            <td>リスク表記に関する法的・コンプライアンス確認</td>
-            <td>全体</td>
-            <td><span class="status status-pending">未確認</span></td>
-          </tr>
-          <tr>
-            <td>6</td>
-            <td>ステーブルトークンとしての法的位置づけの表現</td>
-            <td>2通目</td>
-            <td><span class="status status-pending">未確認</span></td>
-          </tr>
-          <tr>
-            <td>7</td>
-            <td>ユーザー事例・テスティモニアルの有無</td>
-            <td>5通目</td>
-            <td><span class="status status-pending">未確認</span></td>
-          </tr>
-          <tr>
-            <td>8</td>
-            <td>インフレ率・銀行金利の数値が最新か確認</td>
-            <td>1・2通目</td>
-            <td><span class="status status-pending">未確認</span></td>
-          </tr>
-          <tr>
-            <td>9</td>
-            <td>「ステーキング」表現の正確性（レンディングとの使い分け）</td>
-            <td>全体</td>
-            <td><span class="status status-pending">未確認</span></td>
-          </tr>
+          <tr><td>1</td><td>JPYRの取得方法・購入導線の具体的な記載</td><td>4通目</td><td><span class="status status-pending">未確認</span></td></tr>
+          <tr><td>2</td><td>現在のAPY（想定利回り）の数値</td><td>4通目</td><td><span class="status status-pending">未確認</span></td></tr>
+          <tr><td>3</td><td>MorphoでのJPYR専用ステーキングページURL</td><td>1・5通目</td><td><span class="status status-pending">未確認</span></td></tr>
+          <tr><td>4</td><td>引き出し条件・最低ステーキング額</td><td>5通目</td><td><span class="status status-pending">未確認</span></td></tr>
+          <tr><td>5</td><td>リスク表記に関する法的・コンプライアンス確認</td><td>全体</td><td><span class="status status-pending">未確認</span></td></tr>
+          <tr><td>6</td><td>ステーブルトークンとしての法的位置づけの表現</td><td>2通目</td><td><span class="status status-pending">未確認</span></td></tr>
+          <tr><td>7</td><td>ユーザー事例・テスティモニアルの有無</td><td>5通目</td><td><span class="status status-pending">未確認</span></td></tr>
+          <tr><td>8</td><td>インフレ率・銀行金利の数値が最新か確認</td><td>1・2通目</td><td><span class="status status-pending">未確認</span></td></tr>
+          <tr><td>9</td><td>「ステーキング」表現の正確性（レンディングとの使い分け）</td><td>全体</td><td><span class="status status-pending">未確認</span></td></tr>
         </tbody>
       </table>
     </div>
@@ -970,7 +1249,6 @@ Morpho公式サイト: https://morpho.org/
     <!-- CVR向上施策 -->
     <div class="section" id="cvr">
       <h2>CVR向上のために用意できるとよい施策</h2>
-
       <div class="cvr-card">
         <h4>早期行動インセンティブ</h4>
         <ul>
@@ -979,7 +1257,6 @@ Morpho公式サイト: https://morpho.org/
           <li><strong>手数料キャッシュバック</strong>: 初回ガス代相当のJPYR還元。始めるコストをゼロに見せる</li>
         </ul>
       </div>
-
       <div class="cvr-card">
         <h4>6通目リマインドメール（+9日）</h4>
         <ul>
@@ -988,7 +1265,6 @@ Morpho公式サイト: https://morpho.org/
           <li>1〜5通目の要点を3行で要約し、読み返す手間を省く</li>
         </ul>
       </div>
-
       <div class="cvr-card">
         <h4>その他</h4>
         <ul>
@@ -997,15 +1273,11 @@ Morpho公式サイト: https://morpho.org/
           <li><strong>チャットサポート導線</strong>: LINE/Discordで質問可能にし、操作不安で離脱する層を拾う</li>
         </ul>
       </div>
-
       <div class="feedback-area">
         <details open>
           <summary>CVR施策へのフィードバック</summary>
           <textarea placeholder="実現可能な施策、特典として提供できるもの、優先度などコメントをお願いします"></textarea>
-          <div class="fb-actions">
-            <button class="copy-btn" onclick="copyFeedback(this)">コピー</button>
-            <span class="fb-hint">記入後コピーして共有してください</span>
-          </div>
+          <div class="fb-actions"><button class="copy-btn" onclick="copyFeedback(this)">コピー</button><span class="fb-hint">記入後コピーして共有してください</span></div>
         </details>
       </div>
     </div>
@@ -1016,22 +1288,26 @@ Morpho公式サイト: https://morpho.org/
       <div class="feedback-area">
         <details open>
           <summary>全体の構成・トーン・方向性について</summary>
-          <textarea style="min-height:120px;" placeholder="メール全体の流れ、トーン、不足している情報、修正すべき点など自由にコメントしてください"></textarea>
-          <div class="fb-actions">
-            <button class="copy-btn" onclick="copyFeedback(this)">コピー</button>
-            <span class="fb-hint">記入後コピーして共有してください</span>
-          </div>
+          <textarea style="min-height:120px;" placeholder="パターンA/Bのどちらが良いか、ミックスしたいか、トーンの調整など自由にコメントしてください"></textarea>
+          <div class="fb-actions"><button class="copy-btn" onclick="copyFeedback(this)">コピー</button><span class="fb-hint">記入後コピーして共有してください</span></div>
         </details>
       </div>
     </div>
 
   </div>
 <script>
+function switchPattern(p) {
+  document.querySelectorAll('.pattern-tab').forEach(function(t) { t.classList.remove('active'); });
+  document.querySelectorAll('.tab-content').forEach(function(c) { c.classList.remove('active'); });
+  event.currentTarget.classList.add('active');
+  document.querySelectorAll('[data-pattern="' + p + '"]').forEach(function(c) { c.classList.add('active'); });
+}
 function copyFeedback(btn) {
   var textarea = btn.closest('.feedback-area').querySelector('textarea');
   if (!textarea.value.trim()) return;
   var label = btn.closest('.feedback-area').querySelector('summary').textContent.trim();
-  var text = '【' + label + '】\n' + textarea.value;
+  var activeTab = document.querySelector('.pattern-tab.active').textContent.trim().split('\n')[0];
+  var text = '【' + activeTab + ' / ' + label + '】\n' + textarea.value;
   navigator.clipboard.writeText(text).then(function() {
     btn.textContent = 'コピー済み';
     btn.classList.add('copied');
