@@ -1299,6 +1299,12 @@ JPYR運営チーム</div>
       </div>
     </div>
 
+    <!-- 一括コピー -->
+    <div class="section" style="text-align:center;">
+      <button onclick="copyAll()" style="padding:14px 40px;font-size:15px;font-weight:700;color:#fff;background:#4361ee;border:none;border-radius:10px;cursor:pointer;transition:all 0.15s;" onmouseover="this.style.background='#302b63'" onmouseout="this.style.background='#4361ee'" id="copyAllBtn">記入済みのフィードバックを一括コピー</button>
+      <div style="font-size:12px;color:#888;margin-top:8px;">入力があるフィードバック欄のみまとめてコピーします</div>
+    </div>
+
   </div>
 <script>
 function switchPattern(p) {
@@ -1329,6 +1335,42 @@ function copyFeedback(btn) {
       btn.textContent = 'コピー';
       btn.classList.remove('copied');
     }, 2000);
+  });
+}
+function copyAll() {
+  var activeTab = document.querySelector('.pattern-tab.active').childNodes[0].textContent.trim();
+  var parts = [];
+  // 表示中のタブ内 + タブ外（CVR・全体）のfeedback-areaを収集
+  document.querySelectorAll('.feedback-area').forEach(function(area) {
+    var textarea = area.querySelector('textarea');
+    if (!textarea || !textarea.value.trim()) return;
+    // 非表示タブ内のものはスキップ
+    var tabContent = area.closest('.tab-content');
+    if (tabContent && !tabContent.classList.contains('active')) return;
+    var card = area.closest('.mail-detail');
+    var label = '';
+    if (card) {
+      var h3 = card.querySelector('h3');
+      var num = card.querySelector('.mail-num');
+      label = (num ? num.textContent.trim() + '通目 ' : '') + (h3 ? h3.textContent.trim() : '');
+    } else {
+      label = area.querySelector('summary').textContent.trim();
+    }
+    parts.push('【' + label + '】\n' + textarea.value.trim());
+  });
+  if (parts.length === 0) {
+    var btn = document.getElementById('copyAllBtn');
+    btn.textContent = 'フィードバックが未入力です';
+    btn.style.background = '#999';
+    setTimeout(function() { btn.textContent = '記入済みのフィードバックを一括コピー'; btn.style.background = '#4361ee'; }, 2000);
+    return;
+  }
+  var text = activeTab + ' フィードバック\n' + '='.repeat(30) + '\n\n' + parts.join('\n\n');
+  navigator.clipboard.writeText(text).then(function() {
+    var btn = document.getElementById('copyAllBtn');
+    btn.textContent = 'コピー済み（' + parts.length + '件）';
+    btn.style.background = '#06d6a0';
+    setTimeout(function() { btn.textContent = '記入済みのフィードバックを一括コピー'; btn.style.background = '#4361ee'; }, 2500);
   });
 }
 </script>
