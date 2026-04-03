@@ -1305,9 +1305,18 @@ function switchPattern(p) {
 function copyFeedback(btn) {
   var textarea = btn.closest('.feedback-area').querySelector('textarea');
   if (!textarea.value.trim()) return;
-  var label = btn.closest('.feedback-area').querySelector('summary').textContent.trim();
-  var activeTab = document.querySelector('.pattern-tab.active').textContent.trim().split('\n')[0];
-  var text = '【' + activeTab + ' / ' + label + '】\n' + textarea.value;
+  var activeTab = document.querySelector('.pattern-tab.active').childNodes[0].textContent.trim();
+  // メールカードからタイトルを取得
+  var card = btn.closest('.mail-detail');
+  var mailLabel = '';
+  if (card) {
+    var h3 = card.querySelector('h3');
+    var num = card.querySelector('.mail-num');
+    mailLabel = (num ? num.textContent.trim() + '通目 ' : '') + (h3 ? h3.textContent.trim() : '');
+  } else {
+    mailLabel = btn.closest('.feedback-area').querySelector('summary').textContent.trim();
+  }
+  var text = '【' + activeTab + ' / ' + mailLabel + '】\n' + textarea.value;
   navigator.clipboard.writeText(text).then(function() {
     btn.textContent = 'コピー済み';
     btn.classList.add('copied');
