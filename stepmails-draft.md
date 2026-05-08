@@ -80,7 +80,6 @@ JPYR Timesにご登録いただきありがとうございます。
 
 ▼ JPYRを購入する
 https://jpyr.tech/jp/buy?ag=b
-※アフィリエイトリンクを含みます
 
 ▼ Morphoでステーキングを始める手順
 https://finalcashback.com/crypto/how-to-start-jpyr-lending-on-morpho/
@@ -319,7 +318,6 @@ JPYRの購入とMorphoでの運用、2ステップで完結します。
 
 ▼ JPYRを購入する
 https://jpyr.tech/jp/buy?ag=b
-※アフィリエイトリンクを含みます
 
 ステップ2: MorphoでJPYRを預け入れる
 ウォレットをMorphoに接続 → Vaultを選択 → Approve（初回のみ）→ Supplyで完了。
@@ -410,7 +408,6 @@ https://jpyr.online/
 
 ▼ JPYRを購入する
 https://jpyr.tech/jp/buy?ag=b
-※アフィリエイトリンクを含みます
 
 ▼ Morphoでステーキングを始める手順（画面キャプチャ付き）
 https://finalcashback.com/crypto/how-to-start-jpyr-lending-on-morpho/
@@ -451,7 +448,6 @@ A. 暗号資産の利益は雑所得として課税対象です。
 
 ▼ 今すぐJPYRを購入する
 https://jpyr.tech/jp/buy?ag=b
-※アフィリエイトリンクを含みます
 
 「始めたいけど、操作が不安」
 「自分の理解が合っているか確認したい」
@@ -466,7 +462,6 @@ JPYR Times公式サイト: https://jpyr.online/
 Morpho公式サイト: https://morpho.org/
 
 ※本メールは情報提供を目的としたものであり、特定の金融商品への投資を推奨するものではありません。暗号資産の取引にはリスクが伴います。投資判断はご自身の責任において行ってください。
-※JPYR購入リンクはアフィリエイトリンクを含みます。
 
 ---
 
@@ -490,6 +485,5 @@ Morpho公式サイト: https://morpho.org/
 | 10 | サポート導線 | URL未確定（チャット+Calendly） → **jpyr.online お問い合わせフォーム統一** |
 | 11 | キャンペーン | 未記載 → **全5通に「30日以内・先着100名・5,000 JPYR」ブロック挿入** |
 | 12 | 少額訴求 | 「数千円でも」 → **「1,000 JPYRから」マーケ表現で統一** |
-| 13 | アフィリエイト開示 | なし → **CTA直下＋末尾に明記** |
-| 14 | FAQ最低額（5通目） | 未確認 → **1,000 JPYR（特典は5万円以上）** |
-| 15 | FAQ引出条件（5通目） | 未確認 → **原則いつでも可・特典条件は1ヶ月保持** |
+| 13 | FAQ最低額（5通目） | 未確認 → **1,000 JPYR（特典は5万円以上）** |
+| 14 | FAQ引出条件（5通目） | 未確認 → **原則いつでも可・特典条件は1ヶ月保持** |
