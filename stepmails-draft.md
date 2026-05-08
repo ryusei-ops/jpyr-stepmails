@@ -90,7 +90,7 @@ https://finalcashback.com/crypto/how-to-start-jpyr-lending-on-morpho/
 
 ご不明な点は、jpyr.onlineのお問い合わせフォームからお気軽にどうぞ。
 
-▼ お問い合わせ
+▼ お問い合わせはこちらから
 https://jpyr.online/
 
 ――――――――
@@ -166,7 +166,7 @@ JPYRの運用先である「Morpho」についてお伝えします。
 少しでも気になることがあれば、
 jpyr.onlineのお問い合わせフォームから直接ご質問ください。
 
-▼ お問い合わせ
+▼ お問い合わせはこちらから
 https://jpyr.online/
 
 ――――――――
@@ -251,7 +251,7 @@ Morphoの信頼性を示す事実をいくつか。
 「仕組みはわかったけど、自分のケースだとどうなの？」
 そんな時は、jpyr.onlineのお問い合わせフォームから直接ご質問ください。
 
-▼ お問い合わせ
+▼ お問い合わせはこちらから
 https://jpyr.online/
 
 ――――――――
@@ -351,7 +351,7 @@ https://finalcashback.com/crypto/how-to-start-jpyr-lending-on-morpho/
 操作でつまずいたら、一人で悩まないでください。
 jpyr.onlineのお問い合わせフォームから、画面の状況を添えてご相談ください。
 
-▼ お問い合わせ
+▼ お問い合わせはこちらから
 https://jpyr.online/
 
 ――――――――
@@ -454,7 +454,7 @@ https://jpyr.tech/jp/buy?ag=b
 ——そんな方は、jpyr.onlineのお問い合わせフォームからご相談ください。
 画面のスクショを添えていただければ、状況に応じて個別にご案内します。
 
-▼ お問い合わせ
+▼ お問い合わせはこちらから
 https://jpyr.online/
 
 ――――――――
